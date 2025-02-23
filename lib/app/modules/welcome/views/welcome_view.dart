@@ -22,167 +22,179 @@ class WelcomeView extends GetView<WelcomeController> {
       controller.showResults.value = searchController.text.isNotEmpty;
     });
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-            ),
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 500,
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  colors: [Color.fromARGB(255, 255, 203, 157), Colors.white],
-                  center: Alignment(0, -0.09),
-                  radius: 0.9,
+      backgroundColor: AppColors.scafoldColor,
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height * 1.0,
+        width: MediaQuery.of(context).size.width * 1.0,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Stack(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * 0.48,
+                width: MediaQuery.of(context).size.width * 1.0,
+                // padding: EdgeInsets.only(bottom: 50),
+                decoration: BoxDecoration(
+                  color: Color(0xffFAFAFA),
                 ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-              children: [
-                S.h(15.h),
-                _buildNavBar(),
-                Spacer(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Search Fleet Database",
-                        style: GoogleFonts.roboto(
-                          fontSize: 40,
-                          fontWeight: FontWeight.w900,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      S.h(30),
-                      SizedBox(
-                        width: 520,
-                        child: TextField(
-                          controller: searchController,
-                          decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: SvgPicture.asset(
-                                SvgAssets.search,
-                                height: 15,
-                                width: 15,
+                child: Column(
+                  children: [
+                    S.h(20.h),
+                    _buildNavBar(),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 20, right: 20, top: 100),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Fleet Management Database",
+                            style: GoogleFonts.montserrat(
+                              fontSize: 40,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          S.h(10),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              "Easily browse and access fleet management records with a\nstreamlined search experience",
+                              style: GoogleFonts.montserrat(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xff9AA6AC)),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          S.h(40),
+                          SizedBox(
+                            width: 520,
+                            child: TextField(
+                              controller: searchController,
+                              style: GoogleFonts.poppins(
+                                  color: const Color(0xff5B636A),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15),
+                              decoration: InputDecoration(
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: SvgPicture.asset(
+                                    SvgAssets.search,
+                                    height: 15,
+                                    width: 15,
+                                  ),
+                                ),
+                                hintText:
+                                    "Search by Vehicle Number, Team or Driver",
+                                hintStyle: GoogleFonts.poppins(
+                                    color: const Color(0xff9AA6AC),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.disabledTextColor,
+                                      width: 0.4),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.disabledTextColor,
+                                      width: 0.4),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.disabledTextColor,
+                                      width: 0.4),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.disabledTextColor,
+                                      width: 0.4),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: AppColors.disabledTextColor,
+                                      width: 0.4),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
                               ),
                             ),
-                            hintText:
-                                "Search by Vehicle Number, Team or Driver",
-                            hintStyle: GoogleFonts.inter(
-                              color: const Color(0xff9AA6AC),
-                              fontWeight: FontWeight.w500,
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: AppColors.disabledTextColor),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: AppColors.disabledTextColor),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: AppColors.disabledTextColor),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: AppColors.disabledTextColor),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: AppColors.disabledTextColor),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
                           ),
-                        ),
+                          S.h(30.h),
+                        ],
                       ),
-                      S.h(30.h),
-                       Obx(() => controller.showResults.value
-                        ? searchResultComponent()
-                        : SizedBox.shrink()
-                        // Column(
-                        //   children: [
-                        //     SvgPicture.asset(SvgAssets.no_search),
-                        //     S.h(20.h),
-                        //     Text('"No results found"', style: GoogleFonts.roboto(fontSize: 36, color: Colors.black, fontWeight: FontWeight.bold),)
-                        //   ],
-                        // )
-                        ),
-                      
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const Spacer(flex: 3),
-              ],
-            ),
+              ),
+              Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.24,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Obx(() => controller.showResults.value
+                      ? searchResultComponent()
+                      : SizedBox.shrink()),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   Container searchResultComponent() {
     return Container(
-                      width: 520,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey, width: 0.4),
-                          borderRadius: BorderRadius.circular(6)),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextView(
-                                  text: 'Results',
-                                  color: AppColors.disabledTextColor,
-                                  fontSize: FontSize.medium,
-                                ),
-                                TextButton(
-                                  onPressed: () {},
-                                  child: Text(
-                                    "View all",
-                                    style: TextStyle(
-                                        color: AppColors.primaryColor,
-                                        fontWeight: FontWeight.w700,
-                                        decoration: TextDecoration.underline),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            S.h(20.h),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: Column(
-                                children: List.generate(
-                                    5, (index) => resultWidget()),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
+      width: 600,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          // border: Border.all(color: Colors.grey, width: 0.4),
+          borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextView(
+                    text: 'Results',
+                    color: AppColors.disabledTextColor,
+                    fontSize: FontSize.medium,
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "View all",
+                      style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w700,
+                          decoration: TextDecoration.underline),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            S.h(20.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              child: Column(
+                children: List.generate(5, (index) => resultWidget()),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   Container resultWidget() {
@@ -270,38 +282,54 @@ class WelcomeView extends GetView<WelcomeController> {
               ),
             ],
           ),
-          Row(
-            children: [
-              TextButton(
-                onPressed: () {
-                  Get.toNamed(Routes.LOGIN);
-                },
-                child: Text(
-                  "Login",
-                  style: TextStyle(
-                      color: Color(0xff6E7C87), fontWeight: FontWeight.w700),
+          const SizedBox(width: 30),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 40.0, vertical: 16.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+                side: const BorderSide(
+                  color: Color(0xFFFFA726),
+                  width: 1.5,
                 ),
               ),
-              const SizedBox(width: 30),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                onPressed: () {},
-                child: const Text(
-                  "Contact Us",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
+            ),
+            onPressed: () {
+              Get.toNamed(Routes.LOGIN);
+            },
+            child: const Text(
+              "Login",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+
+
+
+// Container(
+          //   decoration: const BoxDecoration(
+          //     color: Colors.white,
+          //   ),
+          // ),
+          // Positioned(
+          //   top: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Container(
+          //     height: 500,
+          //     decoration: BoxDecoration(
+          //       gradient: RadialGradient(
+          //         colors: [Color.fromARGB(255, 255, 203, 157), Colors.white],
+          //         center: Alignment(0, -0.09),
+          //         radius: 0.9,
+          //       ),
+          //     ),
+          //   ),
+          // ),

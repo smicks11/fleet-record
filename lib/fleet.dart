@@ -27,7 +27,7 @@ class _FleetAppState extends State<FleetApp> {
         getPages: AppPages.routes,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          textTheme: GoogleFonts.interTextTheme(
+          textTheme: GoogleFonts.poppinsTextTheme(
             Theme.of(context).textTheme,
           ),
         ),

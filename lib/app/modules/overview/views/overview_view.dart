@@ -1,4 +1,5 @@
 import 'package:fleet_app/app/routes/app_pages.dart';
+import 'package:fleet_app/app/shared/colors.dart';
 import 'package:fleet_app/app/shared/main_menu.dart';
 import 'package:fleet_app/app/shared/responsive_buidler.dart';
 import 'package:fleet_app/app/shared/side_bar.dart';
@@ -14,7 +15,7 @@ class OverviewView extends GetView<OverviewController> {
     final scafoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
       key: scafoldKey,
-      backgroundColor: Color(0xffF6F8F9),
+      backgroundColor: AppColors.scafoldColor,
       drawer: ResponsiveBuilder.isDesktop(context)
           ? null
           : Drawer(child: buildSidebar()),
@@ -28,7 +29,7 @@ class OverviewView extends GetView<OverviewController> {
               buildSidebar(),
               VerticalDivider(
                 thickness: 1.9,
-                color: Colors.grey.withOpacity(0.15),
+                color: Colors.grey.withOpacity(0.06),
               ),
               Expanded(
                 flex: constraints.maxWidth > 1350 ? 16 : 15,

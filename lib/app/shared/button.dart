@@ -42,7 +42,7 @@ class MyButton {
                 borderRadius: borderRadius ?? BorderRadius.circular(12),
               ),
               minimumSize: size ?? const Size(0, 59),
-              textStyle: GoogleFonts.inter(
+              textStyle: GoogleFonts.poppins(
                   textStyle: TextStyle(
                       color: textColor ?? AppColors.textColor,
                       fontWeight: fontWeight ?? FontWeight.w700,

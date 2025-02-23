@@ -1,3 +1,4 @@
+import 'package:fleet_app/app/modules/car_portal/views/car_detail_view.dart';
 import 'package:fleet_app/app/modules/car_portal/views/car_portal_view.dart';
 import 'package:fleet_app/app/modules/home/views/home_view.dart';
 import 'package:fleet_app/app/modules/integration/views/integration_view.dart';
@@ -21,9 +22,11 @@ class OverviewController extends GetxController {
   GetView getPage(String? route) {
     switch (route) {
       case Routes.HOME:
-        return HomeView();
+        return CarDetailView();
       case Routes.CAR_PORTAL:
         return CarPortalView();
+      case '/car_portal/car_detail':  
+      return CarDetailView();
       case Routes.INTEGRATION:
         return IntegrationView();
       case Routes.SETTINGS:

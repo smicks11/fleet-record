@@ -26,6 +26,9 @@ class ImageAssets {
   static const String cbn = "$IMAGEPATH/cbn.png";
   static const String bank = "$IMAGEPATH/bank.png";
   static const String blog = "$IMAGEPATH/blog.jpg";
+  static const String loginBg = "$IMAGEPATH/login_bg.png";
+  static const String user = "$IMAGEPATH/user.png";
+  static const String car = "$IMAGEPATH/car.png";
 }
 
 class SvgAssets {
@@ -43,6 +46,8 @@ class SvgAssets {
   static const String notif = "$SVGPATH/Bell.svg";
   static const String user = "$SVGPATH/User.svg";
   static const String reload = "$SVGPATH/reload.svg";
+  static const String filter = "$SVGPATH/filter.svg";
+  static const String edit = "$SVGPATH/edit.svg";
 }
 
 class LottieAssets {

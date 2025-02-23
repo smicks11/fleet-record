@@ -9,6 +9,7 @@ abstract class Routes {
   static const LOGIN = _Paths.LOGIN;
   static const OVERVIEW = _Paths.OVERVIEW;
   static const CAR_PORTAL = _Paths.CAR_PORTAL;
+  static const CAR_DETAIL = _Paths.CAR_DETAIL;
   static const INTEGRATION = _Paths.INTEGRATION;
   static const SETTINGS = _Paths.SETTINGS;
 }
@@ -21,6 +22,7 @@ abstract class _Paths {
   static const LOGIN = '/login';
   static const OVERVIEW = '/overview';
   static const CAR_PORTAL = '/car-portal';
+  static const CAR_DETAIL = '/car-detail';
   static const INTEGRATION = '/integration';
   static const SETTINGS = '/settings';
 }
