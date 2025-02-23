@@ -22,13 +22,11 @@ class OverviewController extends GetxController {
   GetView getPage(String? route) {
     switch (route) {
       case Routes.HOME:
-        return CarDetailView();
+        return HomeView();
       case Routes.CAR_PORTAL:
         return CarPortalView();
       case '/car_portal/car_detail':  
       return CarDetailView();
-      case Routes.INTEGRATION:
-        return IntegrationView();
       case Routes.SETTINGS:
         return SettingsView();
       default:

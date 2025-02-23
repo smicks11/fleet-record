@@ -65,8 +65,6 @@ class OverviewView extends GetView<OverviewController> {
       case 1:
         return Routes.CAR_PORTAL;
       case 2:
-        return Routes.INTEGRATION;
-      case 3:
         return Routes.SETTINGS;
       default:
         return Routes.HOME;
