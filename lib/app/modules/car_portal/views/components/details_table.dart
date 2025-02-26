@@ -1,28 +1,48 @@
+import 'package:fleet_app/app/data/vehicle_payload.dart';
+import 'package:fleet_app/app/modules/car_portal/controllers/car_portal_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class VehicleDetailsTable extends StatelessWidget {
-  final List<Map<String, String>> vehicleDetails = [
-    {"Feature": "Asset Code", "Detail": "AC-12345"},
-    {"Feature": "Reg Number", "Detail": "EPE 745 DL"},
-    {"Feature": "Category", "Detail": "Sedan"},
-    {"Feature": "Model", "Detail": "Toyota Corolla"},
-    {"Feature": "Year", "Detail": "2020"},
-    {"Feature": "Fuel Type", "Detail": "Gasoline"},
-    {"Feature": "Mileage", "Detail": "45,000 km"},
-    {"Feature": "Transmission", "Detail": "Automatic"},
-    {"Feature": "Engine Capacity", "Detail": "1.8L"},
-    {"Feature": "Color", "Detail": "Silver"},
-    {"Feature": "Chassis Number", "Detail": "XYZ123456789"},
-    {"Feature": "Owner", "Detail": "FleetCorp Ltd."},
-    {"Feature": "Last Service Date", "Detail": "10th July 2024"},
-    {"Feature": "Next Service Due", "Detail": "10th Jan 2025"},
-    {"Feature": "Insurance Expiry", "Detail": "15th Dec 2024"},
-    {"Feature": "Tire Condition", "Detail": "Good"},
-    {"Feature": "Battery Health", "Detail": "Optimal"},
-    {"Feature": "GPS Installed", "Detail": "Yes"},
-    {"Feature": "Fuel Consumption", "Detail": "6.5L/100km"},
-    {"Feature": "Seats", "Detail": "5"},
-  ];
+  
+
+  VehicleDetailsTable({super.key, });
+  final carController = Get.find<CarPortalController>();
+
+  List<Map<String, String>> get vehicleDetails {
+    return [
+      {"Feature": "Asset Code", "Detail": carController.vehicleDetail.value?.assetCode ?? "--"},
+      {"Feature": "Reg Number", "Detail": carController.vehicleDetail.value?.regNumber ?? "--"},
+      {
+        "Feature": "Vehicle Category",
+        "Detail": carController.vehicleDetail.value?.vehicleCategory ?? "--"
+      },
+      {
+        "Feature": "Date of Purchase",
+        "Detail": carController.formatDate(carController.vehicleDetail.value?.dateOfPurchase.toString())
+      },
+      {
+        "Feature": "Cost of Purchase",
+        "Detail": carController.vehicleDetail.value?.costOfPurchase.toString() ?? "--"
+      },
+      {"Feature": "Net Book Value", "Detail": carController.vehicleDetail.value?.netBookValue.toString() ?? "--"},
+      {"Feature": "Parking Branch", "Detail": carController.vehicleDetail.value?.parkingBranch ?? ""},
+      {"Feature": "Vehicle Brand", "Detail": carController.vehicleDetail.value?.brand?.name ?? ""},
+      {"Feature": "Vehicle Model", "Detail": carController.vehicleDetail.value?.vehicleModel ?? ""},
+      {"Feature": "Vehicle Type", "Detail": carController.vehicleDetail.value?.vehicleType ?? ""},
+      {"Feature": "Tyre Type", "Detail": carController.vehicleDetail.value?.tyreType ?? ""},
+      {"Feature": "Battery Type", "Detail": carController.vehicleDetail.value?.batteryType ?? ""},
+      {
+        "Feature": "Tank Capacity",
+        "Detail": carController.vehicleDetail.value?.tankCapacity.toString() ?? "--"
+      },
+      {"Feature": "Vehicle Status", "Detail": carController.vehicleDetail.value?.vehicleStatus ?? ""},
+      {
+        "Feature": "Maintenance Garage",
+        "Detail": carController.vehicleDetail.value?.maintenanceGarage ?? ""
+      },
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +85,8 @@ class VehicleDetailsTable extends StatelessWidget {
                       child: Text(item["Feature"]!, style: _rowStyle())),
                   Expanded(
                       flex: 3,
-                      child: Text(item["Detail"]!, style: _rowStyle())),
+                      child: Text(item["Detail"]!.capitalizeFirst ?? "",
+                          style: _rowStyle())),
                 ],
               ),
             );

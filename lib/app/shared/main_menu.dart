@@ -28,13 +28,13 @@ class MainMenu extends StatelessWidget {
           icon: SvgAssets.car,
           label: "Car Portal",
         ),
-        SelectionButtonData(
-          // activeIcon: EvaIcons.activity,
-          // icon: EvaIcons.activityOutline,
-          activeIcon: SvgAssets.integration,
-          icon: SvgAssets.integration,
-          label: "Integrations",
-        ),
+        // SelectionButtonData(
+        //   // activeIcon: EvaIcons.activity,
+        //   // icon: EvaIcons.activityOutline,
+        //   activeIcon: SvgAssets.integration,
+        //   icon: SvgAssets.integration,
+        //   label: "Integrations",
+        // ),
         SelectionButtonData(
           // activeIcon: EvaIcons.questionMarkCircle,
           // icon: EvaIcons.questionMarkCircleOutline,

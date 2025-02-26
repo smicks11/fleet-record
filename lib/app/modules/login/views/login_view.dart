@@ -177,7 +177,7 @@ class LoginView extends GetView<LoginController> {
                                             email: emailController.text.trim(),
                                             password:
                                                 passwordController.text.trim(),
-                                            context: context);
+                                            );
                                       }
                                     },
                                   )),

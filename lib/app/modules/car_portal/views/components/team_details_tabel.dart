@@ -1,15 +1,43 @@
+import 'package:fleet_app/app/modules/car_portal/controllers/car_portal_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class TeamDetailsTable extends StatelessWidget {
-  final List<Map<String, String>> teamDetails = [
-    {"Feature": "Class", "Detail": "090"},
-    {"Feature": "Division", "Detail": "First"},
-    {"Feature": "Group", "Detail": "06"},
-    {"Feature": "Unit", "Detail": "2-30"},
-    {"Feature": "Team Branch", "Detail": "North West"},
-    {"Feature": "PC Code", "Detail": "3Q79580-4"},
-    {"Feature": "Region", "Detail": "Lagos"},
-  ];
+  final carController = Get.find<CarPortalController>();
+
+  TeamDetailsTable({super.key});
+  List<Map<String, String>> get teamDetails {
+    return [
+      {
+        "Feature": "Class",
+        "Detail": carController.vehicleDetail.value?.team?.className ?? ""
+      },
+      {
+        "Feature": "Division",
+        "Detail": carController.vehicleDetail.value?.team?.division ?? ""
+      },
+      {
+        "Feature": "Group",
+        "Detail": carController.vehicleDetail.value?.team?.group ?? ""
+      },
+      {
+        "Feature": "Unit",
+        "Detail": carController.vehicleDetail.value?.team?.unit ?? ""
+      },
+      {
+        "Feature": "Team Branch",
+        "Detail": carController.vehicleDetail.value?.team?.teamBranch ?? ""
+      },
+      {
+        "Feature": "PC Code",
+        "Detail": carController.vehicleDetail.value?.team?.pcCode ?? ""
+      },
+      {
+        "Feature": "Region",
+        "Detail": carController.vehicleDetail.value?.team?.region ?? ""
+      },
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +83,7 @@ class TeamDetailsTable extends StatelessWidget {
                       child: Text(item["Feature"]!, style: _rowStyle())),
                   Expanded(
                       flex: 3,
-                      child: Text(item["Detail"]!, style: _rowStyle())),
+                      child: Text(item["Detail"]!.capitalizeFirst ?? "", style: _rowStyle())),
                 ],
               ),
             );

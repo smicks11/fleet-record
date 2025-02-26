@@ -1,7 +1,6 @@
 import 'package:fleet_app/app/modules/car_portal/views/car_detail_view.dart';
 import 'package:fleet_app/app/modules/car_portal/views/car_portal_view.dart';
 import 'package:fleet_app/app/modules/home/views/home_view.dart';
-import 'package:fleet_app/app/modules/integration/views/integration_view.dart';
 import 'package:fleet_app/app/modules/settings/views/settings_view.dart';
 import 'package:fleet_app/app/routes/app_pages.dart';
 import 'package:get/get.dart';

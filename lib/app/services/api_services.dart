@@ -9,6 +9,9 @@ import 'package:fleet_app/app/services/api_interceptor.dart';
 import 'package:fleet_app/app/services/logger_service.dart';
 import 'package:fleet_app/app/shared/app_util.dart';
 import 'package:flutter/material.dart';
+import 'package:fleet_app/app/modules/login/controllers/login_controller.dart'
+    as login_controller;
+import 'package:get/get.dart' as getx;
 // import 'package:get/get.dart';
 
 var log = getLogger('ApiServices');
@@ -46,7 +49,7 @@ class ApiServices {
     init();
   }
 
-   static Future<ApiResponse<T>> authPostApi<T>(
+  static Future<ApiResponse<T>> authPostApi<T>(
     String url,
     dynamic body, {
     Map<String, dynamic>? params,
@@ -62,8 +65,13 @@ class ApiServices {
           ),
           data: serializeBody(body),
           queryParameters: params);
-      //log.d("response.statusCode : ${response.statusCode}");
+
       final dynamic data = response.data;
+      debugPrint(
+          "ENDPOINT : ${response.requestOptions.baseUrl}${response.requestOptions.path}");
+      debugPrint("STATUSCODE : ${response.statusCode}");
+      debugPrint("REQUEST: ${response.requestOptions.data}");
+      debugPrint("RESPONSE: ${response.data}");
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
           response.statusCode == 202) {
@@ -92,7 +100,6 @@ class ApiServices {
     dynamic body, {
     bool useToken = true,
     bool switchBaseUrl = false,
-    required BuildContext context,
     Map<String, dynamic>? params,
     T Function(dynamic)? transform,
   }) async {
@@ -100,14 +107,18 @@ class ApiServices {
     params ??= <String, dynamic>{};
     final ApiResponse<T> apiResponse = ApiResponse<T>();
     try {
-      final token = controller.user_token.value;
+      final token = getx.Get.find<login_controller.LoginController>()
+          .loginPayload
+          .value
+          ?.data
+          ?.accessToken;
       Response response;
       if (switchBaseUrl == false) {
         response = useToken
             ? await _dio.get(url,
                 options: Options(
                   headers: {
-                    'Authorization': token,
+                    'Authorization': 'Bearer $token',
                   },
                   validateStatus: (_) => true,
                 ),
@@ -122,7 +133,7 @@ class ApiServices {
             ? await _dio.get(url,
                 options: Options(
                   headers: {
-                    'Authorization': token,
+                    'Authorization': 'Bearer $token',
                   },
                   validateStatus: (_) => true,
                 ),
@@ -136,13 +147,18 @@ class ApiServices {
 
       //log.d("response.statusCode : ${response.statusCode}");
       final dynamic data = response.data;
+      debugPrint(
+          "ENDPOINT : ${response.requestOptions.baseUrl}${response.requestOptions.path}");
+      debugPrint("STATUSCODE : ${response.statusCode}");
+      debugPrint("REQUEST: ${response.requestOptions.data}");
+      debugPrint("RESPONSE: ${response.data}");
       if (response.statusCode == 200 || response.statusCode == 201) {
         apiResponse.status = true;
         apiResponse.data = transform(data);
         apiResponse.message = data['message'];
       } else if (response.statusCode == 401) {
         // navigationService.replaceWithSignIn();
-        AppUtil.showSnackBar(context,
+        AppUtil.showSnackBar(
             text: 'Login session expired, kindly login again', error: true);
       } else {
         apiResponse.status = false;
@@ -167,7 +183,11 @@ class ApiServices {
     final ApiResponse<T> apiResponse = ApiResponse<T>();
     try {
       // final token = _persistentStorageService.getToken;
-      final token = controller.user_token.value;
+      final token = getx.Get.find<login_controller.LoginController>()
+          .loginPayload
+          .value
+          ?.data
+          ?.accessToken;
       Response response = await _dio.patch(url,
           options: Options(
             headers: {
@@ -179,6 +199,11 @@ class ApiServices {
           data: body);
       //log.d("response.statusCode : ${response.statusCode}");
       final dynamic data = response.data;
+      debugPrint(
+          "ENDPOINT : ${response.requestOptions.baseUrl}${response.requestOptions.path}");
+      debugPrint("STATUSCODE : ${response.statusCode}");
+      debugPrint("REQUEST: ${response.requestOptions.data}");
+      debugPrint("RESPONSE: ${response.data}");
       if (response.statusCode == 200 || response.statusCode == 201) {
         apiResponse.status = true;
         apiResponse.data = transform(data);
@@ -207,13 +232,17 @@ class ApiServices {
     final ApiResponse<T> apiResponse = ApiResponse<T>();
     try {
       // final token = _persistentStorageService.getToken;
-      final token = controller.user_token.value;
+      final token = getx.Get.find<login_controller.LoginController>()
+          .loginPayload
+          .value
+          ?.data
+          ?.accessToken;
       Response response;
       if (switchBaseUrl == false) {
         response = await _dio.put(url,
             options: Options(
               headers: {
-                'Authorization': token,
+                'Authorization': 'Bearer $token',
               },
               validateStatus: (_) => true,
             ),
@@ -223,7 +252,7 @@ class ApiServices {
         response = await _dio.put(url,
             options: Options(
               headers: {
-                'Authorization': token,
+                'Authorization': 'Bearer $token',
               },
               validateStatus: (_) => true,
             ),
@@ -233,6 +262,11 @@ class ApiServices {
 
       //log.d("response.statusCode : ${response.statusCode}");
       final dynamic data = response.data;
+      debugPrint(
+          "ENDPOINT : ${response.requestOptions.baseUrl}${response.requestOptions.path}");
+      debugPrint("STATUSCODE : ${response.statusCode}");
+      debugPrint("REQUEST: ${response.requestOptions.data}");
+      debugPrint("RESPONSE: ${response.data}");
       if (response.statusCode == 200 || response.statusCode == 201) {
         apiResponse.status = true;
         apiResponse.data = transform(data);
@@ -260,13 +294,17 @@ class ApiServices {
     params ??= <String, dynamic>{};
     final ApiResponse<T> apiResponse = ApiResponse<T>();
     try {
-      final token = controller.user_token.value;
+      final token = getx.Get.find<login_controller.LoginController>()
+          .loginPayload
+          .value
+          ?.data
+          ?.accessToken;
       Response response;
       if (switchBaseUrl == false) {
         response = await _dio.post(url,
             options: Options(
               headers: {
-                'Authorization': token,
+                'Authorization': 'Bearer $token',
               },
               validateStatus: (_) => true,
             ),
@@ -276,7 +314,7 @@ class ApiServices {
         response = await _dio.post(url,
             options: Options(
               headers: {
-                'Authorization': token,
+                'Authorization': 'Bearer $token',
               },
               validateStatus: (_) => true,
             ),
@@ -286,6 +324,11 @@ class ApiServices {
 
       //log.d("response.statusCode : ${response.statusCode}");
       final dynamic data = response.data;
+      debugPrint(
+          "ENDPOINT : ${response.requestOptions.baseUrl}${response.requestOptions.path}");
+      debugPrint("STATUSCODE : ${response.statusCode}");
+      debugPrint("REQUEST: ${response.requestOptions.data}");
+      debugPrint("RESPONSE: ${response.data}");
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
           response.statusCode == 202) {
@@ -316,13 +359,17 @@ class ApiServices {
     final ApiResponse<T> apiResponse = ApiResponse<T>();
     try {
       // final token = _persistentStorageService.getToken;
-      final token = controller.user_token.value;
+      final token = getx.Get.find<login_controller.LoginController>()
+          .loginPayload
+          .value
+          ?.data
+          ?.accessToken;
       Response response;
       if (switchBaseUrl == false) {
         response = await _dio.delete(url,
             options: Options(
               headers: {
-                'Authorization': token,
+                'Authorization': 'Bearer $token',
               },
               validateStatus: (_) => true,
             ),
@@ -332,7 +379,7 @@ class ApiServices {
         response = await _dio.delete(url,
             options: Options(
               headers: {
-                'Authorization': token,
+                'Authorization': 'Bearer $token',
               },
               validateStatus: (_) => true,
             ),
@@ -342,6 +389,11 @@ class ApiServices {
 
       //log.d("response.statusCode : ${response.statusCode}");
       final dynamic data = response.data;
+      debugPrint(
+          "ENDPOINT : ${response.requestOptions.baseUrl}${response.requestOptions.path}");
+      debugPrint("STATUSCODE : ${response.statusCode}");
+      debugPrint("REQUEST: ${response.requestOptions.data}");
+      debugPrint("RESPONSE: ${response.data}");
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
           response.statusCode == 202) {

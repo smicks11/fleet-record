@@ -2,8 +2,9 @@
 import 'dart:io';
 import 'package:fleet_app/app/controller/device_info_controller.dart';
 import 'package:fleet_app/app/data/constant.dart';
+import 'package:fleet_app/app/data/login_payload.dart';
 import 'package:fleet_app/app/routes/app_pages.dart';
-import 'package:fleet_app/app/services/authentication_service.dart';
+import 'package:fleet_app/app/services/remote_service.dart';
 import 'package:fleet_app/app/shared/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,10 +43,11 @@ class LoginController extends GetxController {
     isBusy.value = val;
   }
 
+  var loginPayload = Rx<LoginPayload?>(null);
+
   Future<void> signIn(
       {required String email,
-      required String password,
-      required BuildContext context}) async {
+      required String password}) async {
     final deviceInfoController = Get.find<DeviceInfoController>();
     setBusy(true);
 
@@ -61,20 +63,21 @@ class LoginController extends GetxController {
         "device_name": deviceInfoController.deviceName.value
       };
 
-      final response = await AuthenticationService.loginService(data);
+      final response = await RemoteService.loginService(data);
       if (response.status == true) {
-        setBusy(false);
+        loginPayload.value = response.data;
         Get.offAllNamed(Routes.OVERVIEW);
+        setBusy(false);
       } else {
         setBusy(false);
-        AppUtil.showSnackBar(context,
+        AppUtil.showSnackBar(
             text: response.message ?? ErrorStatus.requestFailure, error: true);
       }
     } on SocketException {
-      AppUtil.showSnackBar(context, text: ErrorStatus.no_internet, error: true);
+      AppUtil.showSnackBar(text: ErrorStatus.no_internet, error: true);
       setBusy(false);
     } catch (e) {
-      AppUtil.showSnackBar(context, text: ErrorStatus.codeError, error: true);
+      AppUtil.showSnackBar(text: ErrorStatus.codeError, error: true);
       setBusy(false);
     }
   }

@@ -10,6 +10,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'components/add_car.dart';
+
 class CarPortalView extends GetView<CarPortalController> {
   const CarPortalView({super.key});
   @override
@@ -56,6 +58,14 @@ class CarPortalView extends GetView<CarPortalController> {
                         width: 520,
                         child: TextField(
                           controller: searchController,
+                          onChanged: (value) {
+                            if (value.isEmpty) {
+                              controller.fetchVehicles(isRefresh: true);
+                            } else {
+                              controller.fetchVehicles(
+                                  isRefresh: true, searchQuery: value);
+                            }
+                          },
                           style: GoogleFonts.poppins(
                               color: const Color(0xff5B636A),
                               fontWeight: FontWeight.w400,
@@ -106,57 +116,57 @@ class CarPortalView extends GetView<CarPortalController> {
                         ),
                       ),
                       S.w(8),
-                      InkResponse(
-                        child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                          decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.02),
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(
-                                  color: Color(0xffDDE2E4), width: 0.8)),
-                          child: Row(
-                            children: [
-                              SvgPicture.asset(SvgAssets.filter, height: 10),
-                              S.w(4.w),
-                              TextView(
-                                text: 'Filter',
-                                color: Color(0xff9AA6AC),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // InkResponse(
+                      //   child: Container(
+                      //     padding:
+                      //         EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      //     decoration: BoxDecoration(
+                      //         color: Colors.grey.withOpacity(0.02),
+                      //         borderRadius: BorderRadius.circular(30),
+                      //         border: Border.all(
+                      //             color: Color(0xffDDE2E4), width: 0.8)),
+                      //     child: Row(
+                      //       children: [
+                      //         SvgPicture.asset(SvgAssets.filter, height: 10),
+                      //         S.w(4.w),
+                      //         TextView(
+                      //           text: 'Filter',
+                      //           color: Color(0xff9AA6AC),
+                      //           fontSize: 12,
+                      //           fontWeight: FontWeight.w600,
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                   Row(
                     children: [
-                      InkResponse(
-                        child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                          decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.02),
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(
-                                  color: Color(0xffDDE2E4), width: 0.8)),
-                          child: Row(
-                            children: [
-                              TextView(
-                                text: 'Edit',
-                                color: Color(0xff9AA6AC),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              S.w(4.w),
-                              SvgPicture.asset(SvgAssets.edit, height: 14),
-                            ],
-                          ),
-                        ),
-                      ),
-                      S.w(5.w),
+                      // InkResponse(
+                      //   child: Container(
+                      //     padding:
+                      //         EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      //     decoration: BoxDecoration(
+                      //         color: Colors.grey.withOpacity(0.02),
+                      //         borderRadius: BorderRadius.circular(30),
+                      //         border: Border.all(
+                      //             color: Color(0xffDDE2E4), width: 0.8)),
+                      //     child: Row(
+                      //       children: [
+                      //         TextView(
+                      //           text: 'Edit',
+                      //           color: Color(0xff9AA6AC),
+                      //           fontSize: 12,
+                      //           fontWeight: FontWeight.w600,
+                      //         ),
+                      //         S.w(4.w),
+                      //         SvgPicture.asset(SvgAssets.edit, height: 14),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      // S.w(5.w),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryColor,
@@ -170,10 +180,15 @@ class CarPortalView extends GetView<CarPortalController> {
                             ),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AddCarDialog(),
+                          );
+                        },
                         icon: const Icon(Icons.add, color: Colors.white),
                         label: const Text(
-                          "Add User",
+                          "Add Car",
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       )

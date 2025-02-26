@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AppUtil {
-  static void showSnackBar(BuildContext context,
-      {required String text, bool error = false}) {
+  static void showSnackBar({required String text, bool error = false}) {
+    final context = Get.overlayContext;
+    if (context == null) return;
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
@@ -61,5 +63,4 @@ class AppUtil {
       }
     });
   }
-
 }

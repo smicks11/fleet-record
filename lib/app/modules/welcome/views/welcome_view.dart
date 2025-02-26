@@ -1,3 +1,4 @@
+import 'package:fleet_app/app/modules/car_portal/views/components/vehicle_table.dart';
 import 'package:fleet_app/app/routes/app_pages.dart';
 import 'package:fleet_app/app/shared/assets.dart';
 import 'package:fleet_app/app/shared/colors.dart';
@@ -17,6 +18,7 @@ class WelcomeView extends GetView<WelcomeController> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController searchController = TextEditingController();
+    final FocusNode searchFocusNode = FocusNode();
 
     searchController.addListener(() {
       controller.showResults.value = searchController.text.isNotEmpty;
@@ -70,59 +72,75 @@ class WelcomeView extends GetView<WelcomeController> {
                           S.h(40),
                           SizedBox(
                             width: 520,
-                            child: TextField(
-                              controller: searchController,
-                              style: GoogleFonts.poppins(
-                                  color: const Color(0xff5B636A),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 15),
-                              decoration: InputDecoration(
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: SvgPicture.asset(
-                                    SvgAssets.search,
-                                    height: 15,
-                                    width: 15,
-                                  ),
-                                ),
-                                hintText:
-                                    "Search by Vehicle Number, Team or Driver",
-                                hintStyle: GoogleFonts.poppins(
-                                    color: const Color(0xff9AA6AC),
+                            child: Focus(
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  searchController.text = searchController.text;
+                                }
+                              },
+                              child: TextField(
+                                controller: searchController,
+                                focusNode: searchFocusNode,
+                                onChanged: (value) {
+                                  if (value.isEmpty) {
+                                    controller.fetchVehicles(isRefresh: true);
+                                  } else {
+                                    controller.fetchVehicles(
+                                        isRefresh: true, searchQuery: value);
+                                  }
+                                },
+                                style: GoogleFonts.poppins(
+                                    color: const Color(0xff5B636A),
                                     fontWeight: FontWeight.w400,
-                                    fontSize: 14),
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.disabledTextColor,
-                                      width: 0.4),
-                                  borderRadius: BorderRadius.circular(30),
+                                    fontSize: 15),
+                                decoration: InputDecoration(
+                                  prefixIcon: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: SvgPicture.asset(
+                                      SvgAssets.search,
+                                      height: 15,
+                                      width: 15,
+                                    ),
+                                  ),
+                                  hintText:
+                                      "Search by Vehicle Number, Team or Driver",
+                                  hintStyle: GoogleFonts.poppins(
+                                      color: const Color(0xff9AA6AC),
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: AppColors.disabledTextColor,
+                                        width: 0.4),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: AppColors.disabledTextColor,
+                                        width: 0.4),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: AppColors.disabledTextColor,
+                                        width: 0.4),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: AppColors.disabledTextColor,
+                                        width: 0.4),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: AppColors.disabledTextColor,
+                                        width: 0.4),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.white,
                                 ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.disabledTextColor,
-                                      width: 0.4),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.disabledTextColor,
-                                      width: 0.4),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.disabledTextColor,
-                                      width: 0.4),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.disabledTextColor,
-                                      width: 0.4),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                filled: true,
-                                fillColor: Colors.white,
                               ),
                             ),
                           ),
@@ -134,7 +152,7 @@ class WelcomeView extends GetView<WelcomeController> {
                 ),
               ),
               Positioned(
-                bottom: MediaQuery.of(context).size.height * 0.24,
+                top: MediaQuery.of(context).size.height * 0.4,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -152,7 +170,7 @@ class WelcomeView extends GetView<WelcomeController> {
 
   Container searchResultComponent() {
     return Container(
-      width: 600,
+      width: 800,
       decoration: BoxDecoration(
           color: Colors.white,
           // border: Border.all(color: Colors.grey, width: 0.4),
@@ -185,12 +203,13 @@ class WelcomeView extends GetView<WelcomeController> {
               ),
             ),
             S.h(20.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              child: Column(
-                children: List.generate(5, (index) => resultWidget()),
-              ),
-            )
+            VehicleTable()
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 5),
+            //   child: Column(
+            //     children: List.generate(5, (index) => resultWidget()),
+            //   ),
+            // )
           ],
         ),
       ),

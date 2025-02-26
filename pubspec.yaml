@@ -27,6 +27,11 @@ dependencies:
   geolocator: ^13.0.2
   geolocator_web: ^4.1.1
   shimmer: 
+  file_picker: 
+  intl:
+  dio_smart_retry: ^6.0.0
+  mime_type: ^1.0.0
+  path_provider: 
 
 dev_dependencies:
   flutter_test:
