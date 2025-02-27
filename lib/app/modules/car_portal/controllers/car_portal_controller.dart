@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:fleet_app/app/data/constant.dart';
 import 'package:fleet_app/app/data/vehicle_payload.dart';
@@ -47,12 +48,13 @@ class CarPortalController extends GetxController {
     // required String fuelType,
     // required bool available,
     required String vehicleModel,
-    required String teamId,
-    required String driverId,
+    String? teamId,
+    String? driverId,
     required List<String> images,
   }) async {
     try {
-      Map<String, dynamic> data = {
+      Map<String, dynamic> data = {};
+      data = {
         // "vehicle_brand_id": vehicleBrandId,
         "asset_code": assetCode.trim(),
         "reg_number": regNumber.trim(),
@@ -69,11 +71,22 @@ class CarPortalController extends GetxController {
         "maintenance_garage": maintenanceGarage.trim(),
         // "fuel_type": fuelType.trim(),
         // "available": available,
+        "available": true,
+        "tyre_size": "string",
+        "fuel_type": "string",
+        "battery_size": "string",
         "vehicle_model": vehicleModel.trim(),
-        "team_id": teamId,
-        "driver_id": driverId,
+        // "team_id": teamId,
+        // "driver_id": driverId,
         "images": images,
       };
+
+      if (teamId != null) {
+        data['team_id'] = teamId;
+      }
+      if (driverId != null) {
+        data['driver_id'] = driverId;
+      }
 
       final response = await RemoteService.createVehicleService(data);
       if (response.status == true) {
@@ -97,6 +110,7 @@ class CarPortalController extends GetxController {
     required String dateEmployed,
     required int level,
     required String serviceProvider,
+    required num salary,
   }) async {
     try {
       Map<String, dynamic> data = {
@@ -106,6 +120,7 @@ class CarPortalController extends GetxController {
         "date_employed": dateEmployed.trim(),
         "level": level,
         "service_provider": serviceProvider.trim(),
+        "salary": salary
       };
 
       final response = await RemoteService.createDriverService(data);
@@ -132,6 +147,7 @@ class CarPortalController extends GetxController {
     required String teamBranch,
     required String pcCode,
     required String region,
+    required String email,
   }) async {
     try {
       Map<String, dynamic> data = {
@@ -142,6 +158,7 @@ class CarPortalController extends GetxController {
         "team_branch": teamBranch.trim(),
         "pc_code": pcCode.trim(),
         "region": region.trim(),
+        "team_email": email
       };
 
       final response = await RemoteService.createTeamService(data);
@@ -192,43 +209,50 @@ class CarPortalController extends GetxController {
     // required bool available,
     required String vehicleModel,
     required List<dynamic> images,
+    required String email,
+    required int salary,
   }) async {
     try {
       setBusy(true);
+      List<String> imageUrls = [];
 
-      // 1. Upload images first
-      List<String> imageUrls = await uploadVehicleImages(images);
-      if (imageUrls.isEmpty) {
-        throw Exception("Failed to upload images");
+      // // 1. Upload images first
+      if (images.isNotEmpty) {
+        try {
+          imageUrls = await uploadVehicleImages(images);
+        } catch (e) {
+          debugPrint("Image upload failed: $e");
+          // Proceed without images
+        }
       }
 
       // 2. Create driver & team concurrently
       final results = await Future.wait([
         createDriver(
-          name: name,
-          driverId: parseddriverId,
-          phoneNumber: phoneNumber,
-          dateEmployed: dateEmployed,
-          level: level,
-          serviceProvider: serviceProvider,
-        ),
+            name: name,
+            driverId: parseddriverId,
+            phoneNumber: phoneNumber,
+            dateEmployed: dateEmployed,
+            level: level,
+            serviceProvider: serviceProvider,
+            salary: salary),
         createTeam(
-          className: className,
-          division: division,
-          group: group,
-          unit: unit,
-          teamBranch: teamBranch,
-          pcCode: pcCode,
-          region: region,
-        )
+            className: className,
+            division: division,
+            group: group,
+            unit: unit,
+            teamBranch: teamBranch,
+            pcCode: pcCode,
+            region: region,
+            email: email)
       ]);
 
       String? driverId = results[0];
       String? teamId = results[1];
 
-      if (driverId == null || teamId == null) {
-        throw Exception("Failed to create driver or team");
-      }
+      // if (driverId == null || teamId == null) {
+      //   throw Exception("Failed to create driver or team");
+      // }
 
       // 3. Create vehicle
       await createVehicle(
@@ -257,7 +281,7 @@ class CarPortalController extends GetxController {
       AppUtil.showSnackBar(
           text: "Creation failed: ${e.toString()}", error: true);
     } finally {
-      await fetchVehicles(isRefresh: true);
+      // await fetchVehicles(isRefresh: true);
       setBusy(false);
     }
   }
@@ -269,25 +293,57 @@ class CarPortalController extends GetxController {
       List<dio.MultipartFile> files = [];
 
       for (var image in images) {
+        if (image == null) continue; // Skip if image is null
+
         if (kIsWeb) {
-          String mimeType = "image/png";
-          List<int> uint8List = image as Uint8List;
-
-          files.add(dio.MultipartFile.fromBytes(
-            uint8List,
-            filename: "image.png",
-            contentType: MediaType("image", "png"),
-          ));
+          if (image is Uint8List) {
+            // Ensure image is a valid Uint8List
+            files.add(dio.MultipartFile.fromBytes(
+              image,
+              filename: "image.png",
+              contentType: MediaType("image", "png"),
+            ));
+          } else {
+            debugPrint("Invalid image format for web: $image");
+            continue; // Skip invalid formats
+          }
         } else {
-          String type = mime(image.path) ?? "image/jpg";
-          List<String> mimeTypeList = type.split("/");
+          if (image is XFile) {
+            // Ensure image is an XFile (if using image_picker)
+            String type = mime(image.path) ?? "image/jpg";
+            List<String> mimeTypeList = type.split("/");
 
-          files.add(await dio.MultipartFile.fromFile(
-            image.path,
-            contentType: MediaType(mimeTypeList[0], mimeTypeList[1]),
-          ));
+            files.add(await dio.MultipartFile.fromFile(
+              image.path,
+              contentType: MediaType(mimeTypeList[0], mimeTypeList[1]),
+            ));
+          } else {
+            debugPrint("Invalid image format for mobile: $image");
+            continue; // Skip invalid formats
+          }
         }
       }
+
+      // for (var image in images) {
+      //   if (kIsWeb) {
+      //     String mimeType = "image/png";
+      //     List<int> uint8List = image as Uint8List;
+
+      //     files.add(dio.MultipartFile.fromBytes(
+      //       uint8List,
+      //       filename: "image.png",
+      //       contentType: MediaType("image", "png"),
+      //     ));
+      //   } else {
+      //     String type = mime(image.path) ?? "image/jpg";
+      //     List<String> mimeTypeList = type.split("/");
+
+      //     files.add(await dio.MultipartFile.fromFile(
+      //       image.path,
+      //       contentType: MediaType(mimeTypeList[0], mimeTypeList[1]),
+      //     ));
+      //   }
+      // }
 
       dio.FormData formData = dio.FormData.fromMap({"file": files});
 
@@ -297,7 +353,7 @@ class CarPortalController extends GetxController {
         options: dio.Options(
           headers: {
             "Authorization":
-                'Bearer ${Get.find<LoginController>().loginPayload.value?.data?.accessToken}',
+                'Bearer ${Get.find<LoginController>().loginPayload.value}',
             "Content-Type": "multipart/form-data",
           },
           validateStatus: (_) => true,
@@ -311,6 +367,7 @@ class CarPortalController extends GetxController {
         throw Exception(response.data['message'] ?? "Image upload failed");
       }
     } catch (e) {
+      print('error on catch: ${e.toString()}');
       return [];
     }
   }

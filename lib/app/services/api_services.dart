@@ -84,7 +84,7 @@ class ApiServices {
           apiResponse.message = data['auth_status'];
         } else {
           apiResponse.status = false;
-          apiResponse.message = data['message'];
+          apiResponse.message = data['message'] ?? data['detail'];
         }
       }
     } catch (e) {
@@ -109,9 +109,9 @@ class ApiServices {
     try {
       final token = getx.Get.find<login_controller.LoginController>()
           .loginPayload
-          .value
-          ?.data
-          ?.accessToken;
+          .value;
+          // ?.data
+          // ?.accessToken;
       Response response;
       if (switchBaseUrl == false) {
         response = useToken
@@ -162,7 +162,7 @@ class ApiServices {
             text: 'Login session expired, kindly login again', error: true);
       } else {
         apiResponse.status = false;
-        apiResponse.message = data['message'];
+        apiResponse.message = data['message'] ?? data['detail'];
       }
     } catch (e) {
       log.w("Error on catch block:-> $e");
@@ -185,9 +185,9 @@ class ApiServices {
       // final token = _persistentStorageService.getToken;
       final token = getx.Get.find<login_controller.LoginController>()
           .loginPayload
-          .value
-          ?.data
-          ?.accessToken;
+          .value;
+          // ?.data
+          // ?.accessToken;
       Response response = await _dio.patch(url,
           options: Options(
             headers: {
@@ -210,7 +210,7 @@ class ApiServices {
         apiResponse.message = data['message'];
       } else {
         apiResponse.status = false;
-        apiResponse.message = data['message'];
+        apiResponse.message = data['message'] ?? data['detail'];
       }
     } catch (e) {
       //log.w("Error on catch block:-> $e");
@@ -234,9 +234,9 @@ class ApiServices {
       // final token = _persistentStorageService.getToken;
       final token = getx.Get.find<login_controller.LoginController>()
           .loginPayload
-          .value
-          ?.data
-          ?.accessToken;
+          .value;
+          // ?.data
+          // ?.accessToken;
       Response response;
       if (switchBaseUrl == false) {
         response = await _dio.put(url,
@@ -273,7 +273,7 @@ class ApiServices {
         apiResponse.message = data['message'];
       } else {
         apiResponse.status = false;
-        apiResponse.message = data['message'].toString();
+        apiResponse.message = data['message'] ?? data['detail'];
       }
     } catch (e) {
       //log.w("Error on catch block:-> $e");
@@ -296,9 +296,9 @@ class ApiServices {
     try {
       final token = getx.Get.find<login_controller.LoginController>()
           .loginPayload
-          .value
-          ?.data
-          ?.accessToken;
+          .value;
+          // ?.data
+          // ?.accessToken;
       Response response;
       if (switchBaseUrl == false) {
         response = await _dio.post(url,
@@ -337,7 +337,7 @@ class ApiServices {
         apiResponse.message = data['message'];
       } else {
         apiResponse.status = false;
-        apiResponse.message = data['message'];
+        apiResponse.message = data['message'] ?? data['detail'];
       }
     } catch (e) {
       //log.w("Error on catch block:-> $e");
@@ -361,9 +361,9 @@ class ApiServices {
       // final token = _persistentStorageService.getToken;
       final token = getx.Get.find<login_controller.LoginController>()
           .loginPayload
-          .value
-          ?.data
-          ?.accessToken;
+          .value;
+          // ?.data
+          // ?.accessToken;
       Response response;
       if (switchBaseUrl == false) {
         response = await _dio.delete(url,
@@ -402,7 +402,7 @@ class ApiServices {
         apiResponse.message = data['message'];
       } else {
         apiResponse.status = false;
-        apiResponse.message = data['message'];
+        apiResponse.message = data['message'] ?? data['detail'];
       }
     } catch (e) {
       //log.w("Error on catch block:-> $e");

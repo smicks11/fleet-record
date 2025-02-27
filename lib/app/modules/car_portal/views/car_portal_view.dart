@@ -188,7 +188,7 @@ class CarPortalView extends GetView<CarPortalController> {
                         },
                         icon: const Icon(Icons.add, color: Colors.white),
                         label: const Text(
-                          "Add Car",
+                          "Add Record",
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       )

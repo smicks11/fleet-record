@@ -12,6 +12,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_network/image_network.dart';
+
+import 'components/network_image.dart';
 
 class CarDetailView extends GetView {
   const CarDetailView({super.key});
@@ -285,6 +288,14 @@ class CarDetailView extends GetView {
                                     "",
                                 context: context),
                             S.h(12),
+                            profileData(
+                                title: 'Salary',
+                                value: carController
+                                        .vehicleDetail.value?.driver?.salary
+                                        .toString() ??
+                                    "",
+                                context: context),
+                            S.h(12),
                           ],
                         )
                       ],
@@ -314,17 +325,42 @@ class CarDetailView extends GetView {
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         return Container(
-                            height: 200,
-                            width: 200,
-                            margin: EdgeInsets.only(
-                                left: index == 0 ? 0 : 25, right: 25),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Color(0xffF6F8F9),
-                              borderRadius: BorderRadius.circular(20),
+                          height: 200,
+                          width: 200,
+                          margin: EdgeInsets.only(
+                              left: index == 0 ? 0 : 25, right: 25),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Color(0xffF6F8F9),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: ImageNetwork(
+                            image: carController
+                                    .vehicleDetail.value?.images?[index] ??
+                                "",
+                            height: 200.0,
+                            width: 200.0,
+                            duration: 1500,
+                            curve: Curves.easeIn,
+                            onPointer: true,
+                            debugPrint: false,
+                            backgroundColor: Colors.grey.withOpacity(0.3),
+                            fitAndroidIos: BoxFit.cover,
+                            fitWeb: BoxFitWeb.cover,
+                            borderRadius: BorderRadius.circular(70),
+                            onLoading: const CircularProgressIndicator(
+                              color: AppColors.primaryColor,
                             ),
-                            child: Image.network(carController
-                                    .vehicleDetail.value?.images?[index] ?? "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200"));
+                            onError: const Icon(
+                              Icons.error,
+                              color: Colors.red,
+                            ),
+                            onTap: () {},
+                          ),
+                          // child: DioImageWidget(imageUrl: carController.vehicleDetail.value?.images?[index] ?? "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200")
+                        );
+                        // child: Image.network(carController
+                        //         .vehicleDetail.value?.images?[index] ?? "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200"));
                       },
                     ),
                   ),

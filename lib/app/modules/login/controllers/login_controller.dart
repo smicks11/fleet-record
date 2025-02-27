@@ -8,6 +8,7 @@ import 'package:fleet_app/app/services/remote_service.dart';
 import 'package:fleet_app/app/shared/app_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
   //TODO: Implement LoginController
@@ -15,8 +16,12 @@ class LoginController extends GetxController {
   final count = 0.obs;
 
   @override
-  void onInit() {
+  void onInit() async{
     super.onInit();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('access_token');
+    loginPayload.value = token ?? "";
+    
   }
 
   @override
@@ -43,7 +48,8 @@ class LoginController extends GetxController {
     isBusy.value = val;
   }
 
-  var loginPayload = Rx<LoginPayload?>(null);
+  // var loginPayload = Rx<LoginPayload?>(null);
+  var loginPayload = ''.obs;
 
   Future<void> signIn(
       {required String email,
@@ -65,7 +71,10 @@ class LoginController extends GetxController {
 
       final response = await RemoteService.loginService(data);
       if (response.status == true) {
-        loginPayload.value = response.data;
+        loginPayload.value = response.data?.data?.accessToken ?? "";
+        // Save token to SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('access_token', response.data?.data?.accessToken ?? "");
         Get.offAllNamed(Routes.OVERVIEW);
         setBusy(false);
       } else {

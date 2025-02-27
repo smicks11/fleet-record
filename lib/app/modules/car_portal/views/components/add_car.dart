@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:fleet_app/app/modules/car_portal/controllers/car_portal_controller.dart';
+import 'package:fleet_app/app/modules/car_portal/views/components/search.dart';
 import 'package:fleet_app/app/shared/app_util.dart';
 import 'package:fleet_app/app/shared/assets.dart';
 import 'package:fleet_app/app/shared/form_validators.dart';
@@ -15,6 +16,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker_for_web/image_picker_for_web.dart';
+import 'package:cross_file/cross_file.dart';
+import 'package:image_picker_platform_interface/src/types/image_source.dart';
 
 class AddCarDialog extends StatefulWidget {
   const AddCarDialog({super.key});
@@ -37,26 +41,112 @@ class _AddCarDialogState extends State<AddCarDialog> {
   // final List<String> availabilityOptions = ["Available", "Unavailable"];
   // final List<String> mileageOptions = ["0-10k", "10k-50k", "50k+"];
 
-  List<dynamic> _pickedImages = [];
+  // List<dynamic> _pickedImages = [];
 
-  Future<void> pickImages() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: true,
-      withData: kIsWeb,
-    );
+  // Future<void> pickImages() async {
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     type: FileType.image,
+  //     allowMultiple: true,
+  //     withData: kIsWeb,
+  //   );
 
-    if (result != null) {
+  //   if (result != null) {
+  //     setState(() {
+  //       _pickedImages = result.files.map((file) {
+  //         if (kIsWeb) {
+  //           return file.bytes;
+  //         } else {
+  //           return File(file.path!);
+  //         }
+  //       }).toList();
+  //     });
+  //   }
+  // }
+  List<dynamic> _pickedImages = List.filled(4, null, growable: true);
+
+  Future<void> pickImageFor(int index) async {
+    final ImagePickerPlugin picker = ImagePickerPlugin();
+
+    final XFile? pickedFile =
+        await picker.getImageFromSource(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      dynamic imageData;
+
+      if (kIsWeb) {
+        imageData = await pickedFile.readAsBytes();
+      } else {
+        imageData = pickedFile.path;
+      }
+
       setState(() {
-        _pickedImages = result.files.map((file) {
-          if (kIsWeb) {
-            return file.bytes;
-          } else {
-            return File(file.path!);
-          }
-        }).toList();
+        _pickedImages[index] = imageData;
       });
     }
+  }
+
+  // Future<void> pickImageFor(int index) async {
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     type: FileType.image,
+  //     allowMultiple: false,
+  //     withData: kIsWeb,
+  //     // withReadStream: kIsWeb
+  //   );
+
+  //   if (result != null) {
+  //     setState(() {
+  //       _pickedImages[index] =
+  //           kIsWeb ? result.files.first.bytes : File(result.files.first.path!);
+  //     });
+  //   }
+  // }
+
+  void removeImageIndex(int index) {
+    setState(() {
+      _pickedImages[index] = null;
+    });
+  }
+
+  Uint8List? _pickedImage;
+
+  Future<void> pickImage() async {
+    final ImagePickerPlugin picker = ImagePickerPlugin();
+
+    final XFile? pickedFile =
+        await picker.getImageFromSource(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      dynamic imageData;
+
+      if (kIsWeb) {
+        imageData = await pickedFile.readAsBytes();
+      } else {
+        imageData = pickedFile.path;
+      }
+
+      setState(() {
+        _pickedImage = imageData;
+      });
+    }
+  }
+
+  // Future<void> pickImage() async {
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     type: FileType.image,
+  //     withData: kIsWeb,
+  //   );
+
+  //   if (result != null) {
+  //     setState(() {
+  //       _pickedImage = result.files.first.bytes;
+  //     });
+  //   }
+  // }
+
+  void removeImage() {
+    setState(() {
+      _pickedImage = null;
+    });
   }
 
   // Controllers for text fields
@@ -389,14 +479,27 @@ class _AddCarDialogState extends State<AddCarDialog> {
       return;
     }
 
-    double cop = double.tryParse(costOfPurchaseController.text) ?? 0;
-    DateTime? purchaseDate =
-        DateFormat('yyyy-MM-dd').parse(dateOfPurchaseController.text);
+    double? cop = double.tryParse(costOfPurchaseController.text);
+    if (cop == null || cop <= 10) {
+      netBookValueController.text = "";
+      return;
+    }
+
+    DateTime? purchaseDate;
+    try {
+      purchaseDate =
+          DateFormat('yyyy-MM-dd').parse(dateOfPurchaseController.text);
+    } catch (e) {
+      netBookValueController.text = "";
+      return;
+    }
 
     int monthsSincePurchase =
         DateTime.now().difference(purchaseDate).inDays ~/ 30;
+    monthsSincePurchase = monthsSincePurchase.clamp(0, 48);
 
-    double netBookValue = cop - ((cop - 10) / 48) * monthsSincePurchase;
+    double depreciationPerMonth = (cop - 10) / 48;
+    double netBookValue = cop - (depreciationPerMonth * monthsSincePurchase);
 
     netBookValueController.text = netBookValue.toStringAsFixed(0);
   }
@@ -946,13 +1049,13 @@ class _AddCarDialogState extends State<AddCarDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Add Car Details',
+                      'Add New Record',
                       style: GoogleFonts.poppins(
                           fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     S.h(4),
                     TextView(
-                      text: 'Fill the below information to add a new car',
+                      text: 'Fill the information below to add a new record',
                       fontSize: 10,
                       fontWeight: FontWeight.w400,
                       color: Color(0xff6E7C87),
@@ -974,75 +1077,168 @@ class _AddCarDialogState extends State<AddCarDialog> {
                           ),
                           S.h(8.h),
                           Row(
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              TextView(
-                                text: "Upload Car Images",
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              S.w(6.w),
-                              InkResponse(
-                                onTap: () => pickImages(),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 5),
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.02),
-                                      borderRadius: BorderRadius.circular(30),
-                                      border: Border.all(
-                                          color: Color(0xffDDE2E4),
-                                          width: 0.8)),
-                                  child: Row(
+                              for (var i = 0; i < 4; i++)
+                                GestureDetector(
+                                  onTap: () {
+                                    pickImageFor(i);
+                                    setState(() {});
+                                  },
+                                  child: Column(
                                     children: [
-                                      TextView(
-                                        text: 'Pick Images',
-                                        color: Color(0xff9AA6AC),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
+                                      Container(
+                                        width: 150,
+                                        height: 150,
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: Colors.grey.withOpacity(0.5),
+                                            width: 1.2,
+                                          ),
+                                        ),
+                                        child: _pickedImages[i] == null
+                                            ? Center(
+                                                child: Icon(Icons.add,
+                                                    color: Colors.grey,
+                                                    size: 30),
+                                              )
+                                            : Stack(
+                                                children: [
+                                                  ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                      child:
+                                                          // image is Uint8List
+                                                          //     ?
+                                                          Image.memory(
+                                                        _pickedImages[i],
+                                                        width: 150,
+                                                        height: 150,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                      // : Image.file(
+                                                      //     _pickedImages[i],
+                                                      //     width: 150,
+                                                      //     height: 150,
+                                                      //     fit: BoxFit.cover,
+                                                      //   ),
+                                                      ),
+                                                  Positioned(
+                                                    top: 5,
+                                                    right: 5,
+                                                    child: GestureDetector(
+                                                      onTap: () =>
+                                                          removeImageIndex(i),
+                                                      child: CircleAvatar(
+                                                        radius: 12,
+                                                        backgroundColor:
+                                                            Colors.black54,
+                                                        child: Icon(Icons.close,
+                                                            size: 16,
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                       ),
-                                      S.w(4.w),
-                                      SvgPicture.asset(SvgAssets.edit,
-                                          height: 14),
+                                      SizedBox(height: 6),
+                                      Text(
+                                        [
+                                          "Front View",
+                                          "Back View",
+                                          "Side View",
+                                          "Interior View"
+                                        ][i],
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey,
+                                        ),
+                                      )
                                     ],
                                   ),
                                 ),
-                              ),
                             ],
                           ),
-                          SizedBox(height: 12),
-                          _pickedImages.isNotEmpty
-                              ? SizedBox(
-                                  height: 150,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: _pickedImages.length,
-                                    itemBuilder: (context, index) {
-                                      final image = _pickedImages[index];
+                          S.h(20.h),
 
-                                      return Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(13),
-                                          child: image is Uint8List
-                                              ? Image.memory(
-                                                  image,
-                                                  width: 150,
-                                                  height: 150,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Image.file(
-                                                  image,
-                                                  width: 150,
-                                                  height: 150,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                )
-                              : SizedBox.shrink(),
+                          // Row(
+                          //   children: [
+                          //     TextView(
+                          //       text: "Upload Car Images",
+                          //       fontSize: 13,
+                          //       fontWeight: FontWeight.w600,
+                          //     ),
+                          //     S.w(6.w),
+                          //     InkResponse(
+                          //       onTap: () => pickImages(),
+                          //       child: Container(
+                          //         padding: EdgeInsets.symmetric(
+                          //             horizontal: 20, vertical: 5),
+                          //         decoration: BoxDecoration(
+                          //             color: Colors.grey.withOpacity(0.02),
+                          //             borderRadius: BorderRadius.circular(30),
+                          //             border: Border.all(
+                          //                 color: Color(0xffDDE2E4),
+                          //                 width: 0.8)),
+                          //         child: Row(
+                          //           children: [
+                          //             TextView(
+                          //               text: 'Pick Images',
+                          //               color: Color(0xff9AA6AC),
+                          //               fontSize: 12,
+                          //               fontWeight: FontWeight.w600,
+                          //             ),
+                          //             S.w(4.w),
+                          //             SvgPicture.asset(SvgAssets.edit,
+                          //                 height: 14),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          // SizedBox(height: 12),
+                          // _pickedImages.isNotEmpty
+                          //     ? SizedBox(
+                          //         height: 150,
+                          //         child: ListView.builder(
+                          //           scrollDirection: Axis.horizontal,
+                          //           itemCount: _pickedImages.length,
+                          //           itemBuilder: (context, index) {
+                          //             final image = _pickedImages[index];
+
+                          //             return Padding(
+                          //               padding: const EdgeInsets.all(4.0),
+                          //               child: ClipRRect(
+                          //                 borderRadius:
+                          //                     BorderRadius.circular(13),
+                          //                 child: image is Uint8List
+                          //                     ? Image.memory(
+                          //                         image,
+                          //                         width: 150,
+                          //                         height: 150,
+                          //                         fit: BoxFit.cover,
+                          //                       )
+                          //                     : Image.file(
+                          //                         image,
+                          //                         width: 150,
+                          //                         height: 150,
+                          //                         fit: BoxFit.cover,
+                          //                       ),
+                          //               ),
+                          //             );
+                          //           },
+                          //         ),
+                          //       )
+                          //     : SizedBox.shrink(),
                           Row(
                             children: [
                               Flexible(
@@ -1064,40 +1260,53 @@ class _AddCarDialogState extends State<AddCarDialog> {
                               S.w(10.w),
                               Flexible(
                                 child: CustomTextField(
-                                  label: "Reg Number",
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Reg number is required';
-                                    }
-                                    // } else if (!RegExp(
-                                    //         r'^[A-Z]{2,3} \d{3} [A-Z]{1,2}$')
-                                    //     .hasMatch(value)) {
-                                    //   return 'Format: ABC 123 XY (max 8 alphanumeric characters)';
-                                    // }
-                                    return null;
-                                  },
-                                  controller: regNumberController,
-                                  maxLength: 8,
-                                  // onChanged: (value) {
-                                  //   String formatted = value
-                                  //       .toUpperCase()
-                                  //       .replaceAll(RegExp(r'[^A-Z0-9]'), '');
-                                  //   if (formatted.length > 2) {
-                                  //     formatted = formatted.replaceRange(
-                                  //         2, 3, ' ${formatted[2]}');
-                                  //   }
-                                  //   if (formatted.length > 6) {
-                                  //     formatted = formatted.replaceRange(
-                                  //         6, 7, ' ${formatted[6]}');
-                                  //   }
-                                  //   regNumberController.value =
-                                  //       TextEditingValue(
-                                  //     text: formatted,
-                                  //     selection: TextSelection.collapsed(
-                                  //         offset: formatted.length),
-                                  //   );
-                                  // },
-                                ),
+                                    label: "Reg Number",
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Reg number is required';
+                                      }
+                                      // else if (!RegExp(
+                                      //         r'^[A-Z]{2,3} \d{3} [A-Z]{1,2}$')
+                                      //     .hasMatch(value)) {
+                                      //   return 'Format: ABC 123 XY (max 8 alphanumeric characters)';
+                                      // }
+                                      return null;
+                                    },
+                                    controller: regNumberController,
+                                    maxLength: 10,
+                                    onChanged: (value) {
+                                      String rawValue = value
+                                          .toUpperCase()
+                                          .replaceAll(RegExp(r'[^A-Z0-9]'), '');
+                                      String formatted = '';
+
+                                      if (rawValue.length > 3) {
+                                        formatted +=
+                                            rawValue.substring(0, 3) + ' ';
+                                      } else {
+                                        formatted += rawValue;
+                                      }
+
+                                      if (rawValue.length > 6) {
+                                        formatted +=
+                                            rawValue.substring(3, 6) + ' ';
+                                      } else if (rawValue.length > 3) {
+                                        formatted += rawValue.substring(3);
+                                      }
+
+                                      if (rawValue.length > 8) {
+                                        formatted += rawValue.substring(6, 8);
+                                      } else if (rawValue.length > 6) {
+                                        formatted += rawValue.substring(6);
+                                      }
+
+                                      regNumberController.value =
+                                          TextEditingValue(
+                                        text: formatted,
+                                        selection: TextSelection.collapsed(
+                                            offset: formatted.length),
+                                      );
+                                    }),
                               ),
                               S.w(10.w),
                               Flexible(
@@ -1236,7 +1445,7 @@ class _AddCarDialogState extends State<AddCarDialog> {
                                 child: CustomDropdown(
                                   label: "Parking Branch",
                                   value: parkingBranch,
-                                  items: parkingBranches,
+                                  items: teamBranchList,
                                   onChanged: (val) =>
                                       setState(() => parkingBranch = val),
                                   validator: (value) => value == null
@@ -1510,6 +1719,69 @@ class _AddCarDialogState extends State<AddCarDialog> {
                                 fontSize: 15, fontWeight: FontWeight.bold),
                           ),
                           S.h(8.h),
+                          GestureDetector(
+                            onTap: pickImage,
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  child: _pickedImage == null
+                                      ? Center(
+                                          child: Icon(Icons.add_a_photo,
+                                              color: Colors.grey, size: 40),
+                                        )
+                                      : Stack(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              child: Image.memory(
+                                                _pickedImage!,
+                                                width: 120,
+                                                height: 120,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: 5,
+                                              right: 5,
+                                              child: GestureDetector(
+                                                onTap: removeImage,
+                                                child: CircleAvatar(
+                                                  radius: 12,
+                                                  backgroundColor:
+                                                      Colors.black54,
+                                                  child: Icon(Icons.close,
+                                                      size: 16,
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                                SizedBox(height: 6),
+                                Text(
+                                  "Upload Image",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+
+                          S.h(8.h),
                           Row(
                             children: [
                               Expanded(
@@ -1549,6 +1821,12 @@ class _AddCarDialogState extends State<AddCarDialog> {
                                 child: CustomTextField(
                                   label: "ID",
                                   controller: idController,
+                                  // inputFormatters: [
+                                  //   FilteringTextInputFormatter.allow(
+                                  //       RegExp("[A-Z0-9]"))
+                                  // ],
+                                  textCapitalization:
+                                      TextCapitalization.characters,
                                   validator: (value) =>
                                       value == null || value.isEmpty
                                           ? 'ID is required'
@@ -1699,6 +1977,16 @@ class _AddCarDialogState extends State<AddCarDialog> {
                                                       error: true);
                                                   return;
                                                 }
+                                                // debugPrint('these are images: $_pickedImages');
+                                                // debugPrint('this is driver image: $_pickedImage');
+                                                int salary = double.tryParse(
+                                                            salaryController
+                                                                .text
+                                                                .replaceAll(
+                                                                    ',', ''))
+                                                        ?.round() ??
+                                                    0;
+
                                                 await carController
                                                     .startCreationProcess(
                                                         name: "${firstNameController.text.trim()} ${lastNameController.text.trim()} ${otherNameController.text.trim()}"
@@ -1757,7 +2045,9 @@ class _AddCarDialogState extends State<AddCarDialog> {
                                                         // fuelType: "", // Set this if needed
                                                         // available: true, // Modify if needed
                                                         vehicleModel: vehicleModel ?? "",
-                                                        images: _pickedImages);
+                                                        images: _pickedImages,
+                                                        salary: salary,
+                                                        email: teamEmailController.text);
                                               }
                                             },
                                           );
@@ -1813,6 +2103,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final Widget? prefixIcon;
+  final TextCapitalization? textCapitalization;
 
   const CustomTextField(
       {required this.label,
@@ -1824,6 +2115,7 @@ class CustomTextField extends StatelessWidget {
       this.onTap,
       this.keyboardType,
       this.inputFormatters,
+      this.textCapitalization,
       this.prefixIcon});
 
   @override
@@ -1841,6 +2133,7 @@ class CustomTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           validator: validator,
+          textCapitalization: textCapitalization ?? TextCapitalization.none,
           style: TextStyle(fontSize: 12),
           maxLength: maxLength,
           readOnly: readOnly,
@@ -1874,71 +2167,72 @@ class CustomTextField extends StatelessWidget {
 }
 
 /// **Reusable Dropdown Widget**
-class CustomDropdown extends StatelessWidget {
-  final String label;
-  final String? value;
-  final List<String> items;
-  final Function(String?) onChanged;
-  final String? Function(String?)? validator;
 
-  const CustomDropdown({
-    required this.label,
-    required this.value,
-    required this.items,
-    required this.onChanged,
-    required this.validator,
-  });
+// class CustomDropdown extends StatelessWidget {
+//   final String label;
+//   final String? value;
+//   final List<String> items;
+//   final Function(String?) onChanged;
+//   final String? Function(String?)? validator;
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextView(
-          text: label,
-          color: Colors.black,
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-        ),
-        SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          value: value,
-          isExpanded: true,
-          validator: validator,
-          style: TextStyle(fontSize: 12),
-          isDense: true,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide:
-                  BorderSide(color: Colors.grey.withOpacity(0.3), width: 1.5),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide:
-                  BorderSide(color: Colors.grey.withOpacity(0.5), width: 1.5),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide:
-                  BorderSide(color: Colors.red.withOpacity(0.6), width: 1.5),
-            ),
-            isDense: true,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
-          ),
-          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.black38),
-          items: items
-              .map((e) => DropdownMenuItem(
-                  value: e, child: TextView(text: e, fontSize: 12)))
-              .toList(),
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
-}
+//   const CustomDropdown({
+//     required this.label,
+//     required this.value,
+//     required this.items,
+//     required this.onChanged,
+//     required this.validator,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         TextView(
+//           text: label,
+//           color: Colors.black,
+//           fontSize: 13,
+//           fontWeight: FontWeight.w600,
+//         ),
+//         SizedBox(height: 8),
+//         DropdownButtonFormField<String>(
+//           value: value,
+//           isExpanded: true,
+//           validator: validator,
+//           style: TextStyle(fontSize: 12),
+//           isDense: true,
+//           decoration: InputDecoration(
+//             border: OutlineInputBorder(
+//               borderRadius: BorderRadius.circular(10),
+//               borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+//             ),
+//             enabledBorder: OutlineInputBorder(
+//               borderRadius: BorderRadius.circular(10),
+//               borderSide:
+//                   BorderSide(color: Colors.grey.withOpacity(0.3), width: 1.5),
+//             ),
+//             focusedBorder: OutlineInputBorder(
+//               borderRadius: BorderRadius.circular(10),
+//               borderSide:
+//                   BorderSide(color: Colors.grey.withOpacity(0.5), width: 1.5),
+//             ),
+//             errorBorder: OutlineInputBorder(
+//               borderRadius: BorderRadius.circular(10),
+//               borderSide:
+//                   BorderSide(color: Colors.red.withOpacity(0.6), width: 1.5),
+//             ),
+//             isDense: true,
+//             contentPadding:
+//                 const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+//           ),
+//           icon: const Icon(Icons.keyboard_arrow_down, color: Colors.black38),
+//           items: items
+//               .map((e) => DropdownMenuItem(
+//                   value: e, child: TextView(text: e, fontSize: 12)))
+//               .toList(),
+//           onChanged: onChanged,
+//         ),
+//       ],
+//     );
+//   }
+// }

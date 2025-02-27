@@ -205,7 +205,7 @@ class _VehicleTableState extends State<VehicleTable> {
           child: Row(
             children: [
               tableCell(
-                  '${vehicle.brand?.name ?? ""} (${vehicle.vehicleModel})'
+                  '${vehicle.brand?.name ?? ""} ${vehicle.vehicleModel} '
                           .capitalizeFirst ??
                       "--",
                   isLeading: true,

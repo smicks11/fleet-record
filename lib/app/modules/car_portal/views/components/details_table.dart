@@ -31,6 +31,7 @@ class VehicleDetailsTable extends StatelessWidget {
       {"Feature": "Vehicle Model", "Detail": carController.vehicleDetail.value?.vehicleModel ?? ""},
       {"Feature": "Vehicle Type", "Detail": carController.vehicleDetail.value?.vehicleType ?? ""},
       {"Feature": "Tyre Type", "Detail": carController.vehicleDetail.value?.tyreType ?? ""},
+      {"Feature": "Tyre Size", "Detail": carController.vehicleDetail.value?.tyreSize ?? ""},
       {"Feature": "Battery Type", "Detail": carController.vehicleDetail.value?.batteryType ?? ""},
       {
         "Feature": "Tank Capacity",
