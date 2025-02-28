@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "293859958098",
+    "project_id": "fleet-3294a",
+    "storage_bucket": "fleet-3294a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293859958098:android:eb6df7cfaa28cba287ee8b",
+        "android_client_info": {
+          "package_name": "com.fleet.fleet_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx11GtYn6-701ISz_LIh7Ig8Kxvpqu7WU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

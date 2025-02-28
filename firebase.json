@@ -1,0 +1,49 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "fleet-3294a",
+          "appId": "1:293859958098:android:eb6df7cfaa28cba287ee8b",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "fleet-3294a",
+          "appId": "1:293859958098:ios:40311f159169bcab87ee8b",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "fleet-3294a",
+          "appId": "1:293859958098:ios:40311f159169bcab87ee8b",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "fleet-3294a",
+          "configurations": {
+            "android": "1:293859958098:android:eb6df7cfaa28cba287ee8b",
+            "ios": "1:293859958098:ios:40311f159169bcab87ee8b",
+            "macos": "1:293859958098:ios:40311f159169bcab87ee8b",
+            "web": "1:293859958098:web:64ef62796d2a94f587ee8b",
+            "windows": "1:293859958098:web:1fa526c9d467312b87ee8b"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
